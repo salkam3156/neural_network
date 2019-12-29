@@ -31,7 +31,7 @@ namespace neural_network.Primitives
 
             foreach (var dendrite in PreceedingDendrites)
             {
-                computeValue += dendrite.InputPulse.SignalValue * dendrite.Synapticewight;
+                computeValue += dendrite.CarriedPulse.SignalValue * dendrite.Synapticewight;
             }
 
             return computeValue;
