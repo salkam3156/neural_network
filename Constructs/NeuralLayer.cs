@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using neural_network.Primitives;
@@ -21,6 +22,11 @@ namespace neural_network.Constructs
         public void ComputeSynapticWeights(double learningRate, double delta)
         {
             Neurons.ForEach(neuron => neuron.Compute(learningRate, delta));
+        }
+
+        public void LogDetails()
+        {
+            Console.WriteLine($@"{Name}, Weight: {Weight}");
         }
     }
 }
