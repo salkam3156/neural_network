@@ -20,7 +20,7 @@ namespace neural_network.Constructs
 
         public void ComputeSynapticWeights(double learningRate, double delta)
         {
-            Neurons.ForEach(element => element.Compute(learningRate, delta));
+            Neurons.ForEach(neuron => neuron.Compute(learningRate, delta));
         }
     }
 }
