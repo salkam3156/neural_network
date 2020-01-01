@@ -11,9 +11,9 @@ namespace neural_network.Constructs
         public string Name { get; set; } = string.Empty;
         public double Weight { get; set; }
 
-        public NeuralLayer(int neuronCount, double initialWight, string name)
+        public NeuralLayer(int neuronCount, double initialWeight, string name)
         {
-            Weight = initialWight;
+            Weight = initialWeight;
             Name = name;
 
             Enumerable.Range(0, neuronCount).ToList().ForEach(element => Neurons.Add(new Neuron()));
