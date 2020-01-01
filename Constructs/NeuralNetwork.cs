@@ -11,9 +11,12 @@ namespace neural_network.Constructs
 
         public void AddLayer(NeuralLayer layer)
         {
-            var dendriteCount = Layers.Any() ? Layers.Last().Neurons.Count : 1;
-
-            layer.Neurons.ForEach(neuron => neuron.PreceedingDendrites.AddRange(GetDendrites(dendriteCount)));
+            layer.Neurons.ForEach(neuron =>
+            {
+                neuron.PreceedingDendrites.AddRange(GetDendrites(Layers?.Last().Neurons.Count
+                ));
+            }
+            );
         }
 
         public void Build()
@@ -27,7 +30,7 @@ namespace neural_network.Constructs
                 }
 
                 var nextLayer = Layers[i + 1];
-                CreateNetwork(layer, nextLayer);
+                AppendLayer(layer, nextLayer);
 
                 i++;
             }
@@ -43,7 +46,7 @@ namespace neural_network.Constructs
             });
         }
 
-        private void CreateNetwork(NeuralLayer prevLayer, NeuralLayer nextLayer)
+        private void AppendLayer(NeuralLayer prevLayer, NeuralLayer nextLayer)
         {
             foreach (var to in nextLayer.Neurons)
             {
@@ -54,11 +57,14 @@ namespace neural_network.Constructs
             }
         }
 
-        private IEnumerable<Dendrite> GetDendrites(int count)
+        private IEnumerable<Dendrite> GetDendrites(int? count)
         {
-            for (int i = 0; i < count; i++)
+            if (count.HasValue)
             {
-                yield return new Dendrite();
+                for (int i = 0; i < count; i++)
+                {
+                    yield return new Dendrite();
+                }
             }
         }
 
