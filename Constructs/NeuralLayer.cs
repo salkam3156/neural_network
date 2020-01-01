@@ -21,7 +21,7 @@ namespace neural_network.Constructs
 
         public void ComputeSynapticWeights(double learningRate, double delta)
         {
-            Neurons.ForEach(neuron => neuron.Compute(learningRate, delta));
+            (Neurons as List<Neuron>).ForEach(neuron => neuron.Compute(learningRate, delta));
         }
 
         public void LogDetails()
