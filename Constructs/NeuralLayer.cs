@@ -19,6 +19,11 @@ namespace neural_network.Constructs
             Enumerable.Range(0, neuronCount).ToList().ForEach(element => Neurons.Add(new Neuron()));
         }
 
+        public void ForwardSignal()
+        {
+            Neurons.ForEach(neuron => neuron.Fire());
+        }
+
         public void ComputeSynapticWeights(double learningRate, double delta)
         {
             (Neurons as List<Neuron>).ForEach(neuron => neuron.Compute(learningRate, delta));
@@ -28,5 +33,6 @@ namespace neural_network.Constructs
         {
             Console.WriteLine($@"{Name}, Weight: {Weight}");
         }
+
     }
 }
