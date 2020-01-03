@@ -16,7 +16,8 @@ namespace neural_network.Constructs
             Weight = initialWeight;
             Name = name;
 
-            Enumerable.Range(0, neuronCount).ToList().ForEach(element => Neurons.Add(new Neuron()));
+            Enumerable.Range(0, neuronCount).ToList()
+                .ForEach(elem => Neurons.Add(new Neuron()));
         }
 
         public void ForwardSignal()
@@ -24,15 +25,16 @@ namespace neural_network.Constructs
             Neurons.ForEach(neuron => neuron.Fire());
         }
 
-        public void ComputeSynapticWeights(double learningRate, double delta)
+        public void CalibrateWeights(double learningRate, double delta)
         {
-            (Neurons as List<Neuron>).ForEach(neuron => neuron.Compute(learningRate, delta));
+            Weight += learningRate * delta;
+
+            Neurons.ForEach(neuron => neuron.UpdateWeights(Weight));
         }
 
-        public void LogDetails()
+        public void PrintDetails()
         {
-            Console.WriteLine($@"{Name}, Weight: {Weight}");
+            Console.WriteLine($"{Name}, Weight: {Weight}");
         }
-
     }
 }

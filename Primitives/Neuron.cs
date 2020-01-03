@@ -4,33 +4,30 @@ namespace neural_network.Primitives
 {
     public class Neuron
     {
-        public List<Dendrite> PreceedingDendrites { get; set; } = new List<Dendrite>();
+        public List<Dendrite> Dendrites { get; set; } = new List<Dendrite>();
+
         public Pulse OutputPulse { get; set; } = new Pulse();
-        private double _weight;
-        private readonly double _treshold = 1;
+        private readonly double _threshold = 1;
 
         public void Fire()
         {
             OutputPulse.SignalValue = ActivationValue();
         }
 
-        public void Compute(double learningRate, double delta)
+        public void UpdateWeights(double recalibratedWeights)
         {
-            _weight += learningRate * delta;
-
-            foreach (var dendrite in PreceedingDendrites)
+            foreach (var terminal in Dendrites)
             {
-                dendrite.Synapticewight = _weight;
+                terminal.SynapticWeight = recalibratedWeights;
             }
         }
 
         private double InputSignalsSum()
         {
             double computeValue = 0.0f;
-
-            foreach (var dendrite in PreceedingDendrites)
+            foreach (var d in Dendrites)
             {
-                computeValue += dendrite.CarriedPulse.SignalValue * dendrite.Synapticewight;
+                computeValue += d.CarriedPulse.SignalValue * d.SynapticWeight;
             }
 
             return computeValue;
@@ -38,7 +35,7 @@ namespace neural_network.Primitives
 
         private double ActivationValue()
         {
-            return InputSignalsSum() <= _treshold ? 0 : _treshold;
+            return InputSignalsSum() <= _threshold ? 0 : _threshold;
         }
     }
 }

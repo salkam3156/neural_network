@@ -2,23 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using neural_network.Primitives;
-using neural_network.Data;
+using neural_network.DataStructures;
 
 namespace neural_network.Constructs
 {
-    public class NeuralNetwork
+    class NeuralNetwork
     {
         public List<NeuralLayer> Layers { get; set; } = new List<NeuralLayer>();
 
         public void AddLayer(NeuralLayer layer)
         {
-            var dendriteCount = Layers.Any() ? Layers.Last().Neurons.Count : 1;
+            var dendriteCount = (Layers.Count > 0) ? Layers.Last().Neurons.Count : 1;
 
-            layer.Neurons.ForEach(neuron =>
-            {
-                neuron.PreceedingDendrites.AddRange(GetDendrites(dendriteCount));
-            }
-            );
+            Enumerable
+                .Range(0, dendriteCount)
+                .ToList()
+                .ForEach((dendrite) =>
+                {
+                    layer.Neurons.ForEach(neuron => neuron.Dendrites.Add(new Dendrite()));
+                });
+
+
         }
 
         public void Build()
@@ -38,45 +42,9 @@ namespace neural_network.Constructs
             }
         }
 
-        private void ComputeOutput()
+        public void Train(Data input, Data expectedOutput, int iterations)
         {
-            Layers
-                .Skip(1)
-                .ToList()
-                .ForEach(layer => layer.ForwardSignal());
-        }
-
-        private void OptimizeWeights(double accuracy)
-        {
-            if (accuracy == 1) return;
-
-            Layers.ForEach(layer => layer.ComputeSynapticWeights(Math.Abs(accuracy), 1));
-        }
-
-        public void PrintDataTable()
-        {
-            Console.WriteLine($@"Name    | Neurons   | Weight {Environment.NewLine}");
-
-            Layers.ForEach(layer =>
-            {
-                Console.WriteLine($@"{layer.Name}    | {layer.Neurons.Count}   | {layer.Weight} {Environment.NewLine}");
-            });
-        }
-
-        private void AppendLayer(NeuralLayer prevLayer, NeuralLayer nextLayer)
-        {
-            foreach (var to in nextLayer.Neurons)
-            {
-                foreach (var from in prevLayer.Neurons)
-                {
-                    to.PreceedingDendrites.Add(new Dendrite() { CarriedPulse = to.OutputPulse, Synapticewight = nextLayer.Weight });
-                }
-            }
-        }
-
-        public void Train(NeuralData input, NeuralData expectedOutput, int iterations, double learningRate = 0.1d)
-        {
-            int epoch = 0;
+            int epoch = 1;
             while (iterations >= epoch)
             {
                 var inputLayer = Layers.First();
@@ -110,17 +78,45 @@ namespace neural_network.Constructs
             }
         }
 
-        private IEnumerable<Dendrite> GetDendrites(int? count)
+        public void PrintDataTable()
         {
-            if (count.HasValue)
+            Console.WriteLine($@"Name    | Neurons   | Weight {Environment.NewLine}");
+
+            Layers.ForEach(layer =>
             {
-                for (int i = 0; i < count; i++)
-                {
-                    yield return new Dendrite();
-                }
-            }
+                Console.WriteLine($@"{layer.Name}    | {layer.Neurons.Count}   | {layer.Weight} {Environment.NewLine}");
+            });
         }
 
 
+        private void ComputeOutput()
+        {
+            Layers
+                .Skip(1)
+                .ToList()
+                .ForEach(postInputLayer => postInputLayer.ForwardSignal());
+        }
+
+        private void OptimizeWeights(double accuracy)
+        {
+            double learningRate = 0.1f;
+
+            if (accuracy == 1) return;
+            if (accuracy > 1) learningRate = -learningRate;
+
+            Layers.ForEach(layer => layer.CalibrateWeights(learningRate, 1));
+        }
+
+        private void AppendLayer(NeuralLayer from, NeuralLayer to)
+        {
+            from.Neurons.ForEach(neuron => neuron.Dendrites.Add(new Dendrite()));
+
+            to.Neurons
+                .ForEach((toNeuron) =>
+                {
+                    from.Neurons
+                        .ForEach(fromNeuron => toNeuron.Dendrites.Add(new Dendrite() { CarriedPulse = fromNeuron.OutputPulse, SynapticWeight = to.Weight }));
+                });
+        }
     }
 }
