@@ -38,7 +38,7 @@ namespace neural_network.Primitives
 
         private double ActivationValue()
         {
-            return InputSignalsSum() >= _treshold ? 0 : _treshold;
+            return InputSignalsSum() <= _treshold ? 0 : _treshold;
         }
     }
 }
